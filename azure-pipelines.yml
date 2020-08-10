@@ -16,11 +16,7 @@ jobs:
       versionSpec: '5.4.0'
   - task: NuGetCommand@2
     inputs:
-      command: 'restore'
-      restoreSolution: $(AppName).sln
-      feedsToUse: 'config'
-      nugetConfigPath: '..\NugetConfig\nuget.config'
-    displayName: NuGet Restore
+      restoreSolution: '$(solution)'
 
   - task: DotNetCoreCLI@2
     displayName: Build
