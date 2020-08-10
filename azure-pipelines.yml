@@ -1,0 +1,37 @@
+jobs:
+- job: Build
+  variables:
+    branch: $(Build.SourceBranchName)
+  workspace:
+    clean: all
+  pool:
+    vmImage: 'windows-latest'
+    demands:
+    - msbuild
+    - visualstudio
+  
+  steps:
+  - task: NuGetToolInstaller@1
+    inputs:
+      versionSpec: '5.4.0'
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: $(AppName).sln
+      feedsToUse: 'config'
+      nugetConfigPath: '..\NugetConfig\nuget.config'
+    displayName: NuGet Restore
+
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      projects: $(AppName).sln
+      arguments: '--configuration Release'
+        
+  - task: DotNetCoreCLI@2
+    displayName: Publish
+    inputs:
+      command: publish
+      publishWebProjects: True
+      arguments: '--configuration Release --output $(build.artifactstagingdirectory)'
+      zipAfterPublish: False
